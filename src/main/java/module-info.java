@@ -7,10 +7,13 @@ module fr.ece.gestionnairetaches {
     requires org.kordamp.bootstrapfx.core;
     //requires fr.ece.gestionnairetaches;
     requires javafx.graphics;
+    //requires fr.ece.gestionnairetaches;
 
     opens fr.ece.gestionnairetaches to javafx.fxml;
     opens fr.ece.gestionnairetaches.kanban to javafx.fxml;
+    opens fr.ece.gestionnairetaches.tableaudebord to javafx.fxml;
 
     exports fr.ece.gestionnairetaches.kanban;
+    exports fr.ece.gestionnairetaches.tableaudebord;
 
 }

@@ -43,6 +43,7 @@
             </children>
 
         </HBox>
+      <Button fx:id="retourBtn" layoutX="428.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="158.0" text="Retour au tableau de bord" />
 
     </children>
 
