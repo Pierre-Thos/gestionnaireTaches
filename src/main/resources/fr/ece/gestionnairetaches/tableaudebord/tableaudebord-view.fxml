@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="welcomeRoot" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.ece.gestionnairetaches.tableaudebord.TableauDeBordController">
+    <children>
+        <VBox alignment="CENTER" layoutX="0.0" layoutY="0.0" prefHeight="400.0" prefWidth="600.0" spacing="25.0">
+            <children>
+                <Label text="Bienvenue dans votre gestionnaire de projets" textAlignment="CENTER">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <VBox alignment="CENTER" spacing="15.0">
+                    <children>
+                        <Button fx:id="kanbanBtn" prefHeight="40.0" prefWidth="200.0" text="Accéder au Kanban" />
+                        <Button fx:id="connexionBtn" prefHeight="40.0" prefWidth="200.0" text="Page de Connexion" />
+                        <Button fx:id="projetsBtn" prefHeight="40.0" prefWidth="200.0" text="Gestion des Projets" />
+                        <Button fx:id="formulairesBtn" prefHeight="40.0" prefWidth="200.0" text="Formulaires" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

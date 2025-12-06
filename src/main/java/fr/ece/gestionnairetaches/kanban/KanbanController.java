@@ -1,15 +1,18 @@
 package fr.ece.gestionnairetaches.kanban;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class KanbanController {
 
@@ -18,6 +21,7 @@ public class KanbanController {
 
     @FXML
     private Button deleteBtn;
+    private Button retourBtn;
 
     @FXML
     private HBox columns;
@@ -34,6 +38,21 @@ public class KanbanController {
     @FXML
     private void initialize() {
         nouvelleTacheBtn.setOnAction(e -> creerTache());
+    }
+
+    private void retour() {
+        retourBtn.setOnAction(e-> open("/fr/ece/gestionnairetaches/tableaudebord/tableaudebord-view.fxml", retourBtn));
+    }
+
+    private void open(String fxmlPath, Button btn) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Scene newScene = new Scene(loader.load());
+            Stage stage = (Stage) btn.getScene().getWindow();
+            stage.setScene(newScene);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void creerTache() {
