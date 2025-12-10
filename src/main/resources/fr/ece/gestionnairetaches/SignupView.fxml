@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="15" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fr.ece.gestionnairetaches.controller.SignupController" prefWidth="350" prefHeight="500">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <Label text="Inscription" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #28a745;"/>
+
+    <TextField fx:id="nomField" promptText="Votre Nom"/>
+    <TextField fx:id="prenomField" promptText="Votre Prénom"/>
+
+    <TextField fx:id="emailField" promptText="Votre Email"/>
+    <PasswordField fx:id="passwordField" promptText="Choisissez un mot de passe"/>
+
+    <Button text="S'INSCRIRE" onAction="#handleSignup" maxWidth="Infinity" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
+    <Hyperlink text="Annuler et retourner à la connexion" onAction="#backToLogin"/>
+    <Label fx:id="errorLabel" textFill="red"/>
+</VBox>
