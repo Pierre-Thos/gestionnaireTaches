@@ -5,6 +5,7 @@ module fr.ece.gestionnairetaches {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
+    requires java.sql;
     //requires fr.ece.gestionnairetaches;
     requires javafx.graphics;
     //requires fr.ece.gestionnairetaches;
