@@ -1,9 +1,13 @@
 package fr.ece.gestionnairetaches;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class FormulairesController {
@@ -31,25 +35,19 @@ public class FormulairesController {
 
     @FXML
     public void initialize() {
-        // Statuts Kanban
         statusCombo.setItems(FXCollections.observableArrayList(
                 "À faire",
                 "En cours",
                 "Terminé"
         ));
 
-        // Projets (temporaire, juste pour tester l'UI)
         projectCombo.setItems(FXCollections.observableArrayList(
                 "Projet A",
                 "Projet B",
                 "Projet C"
         ));
 
-        // Utilisateurs / collaborateurs (temporaire)
         assigneesList.setItems(FXCollections.observableArrayList(
-                "Alice",
-                "Bob",
-                "Charlie",
                 "Nelson",
                 "Pierre",
                 "Yèmi",
@@ -57,22 +55,26 @@ public class FormulairesController {
         ));
         assigneesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        errorLabel.setVisible(false);
+        if (errorLabel != null) {
+            errorLabel.setVisible(false);
+            errorLabel.setText("");
+        }
     }
 
     @FXML
     private void onSave() {
-        errorLabel.setVisible(false);
-        errorLabel.setText("");
+        if (errorLabel != null) {
+            errorLabel.setVisible(false);
+            errorLabel.setText("");
+        }
 
         String projet = projectCombo.getValue();
         String titre = titleField.getText();
         String statut = statusCombo.getValue();
-        LocalDate echeance = dueDatePicker.getValue();
+        LocalDate echeance = dueDatePicker.getValue(); // non utilisé en base pour l'instant
         String description = descriptionArea.getText();
-        var assignees = assigneesList.getSelectionModel().getSelectedItems();
+        ObservableList<String> assignees = assigneesList.getSelectionModel().getSelectedItems();
 
-        // Validation minimale
         if (projet == null || projet.isBlank()) {
             showError("Veuillez sélectionner un projet.");
             return;
@@ -86,30 +88,45 @@ public class FormulairesController {
             return;
         }
 
-        // Pour l'instant, on simule juste un enregistrement en affichant en console
-        System.out.println("===== Nouvelle tâche (simulation) =====");
-        System.out.println("Projet     : " + projet);
-        System.out.println("Titre      : " + titre);
-        System.out.println("Statut     : " + statut);
-        System.out.println("Échéance   : " + echeance);
-        System.out.println("Assignée à : " + assignees);
-        System.out.println("Description: " + description);
-        System.out.println("=======================================");
+        String assigneesStr = "";
+        if (assignees != null && !assignees.isEmpty()) {
+            assigneesStr = String.join(", ", assignees);
+        }
 
-        // TODO : ici tu appelleras ton DAO pour faire un INSERT en MySQL
+        String sql = "INSERT INTO tache (titre, description, statut, projet, assigne_a) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
-        // Ferme la fenêtre après "enregistrement"
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, titre);
+            ps.setString(2, description);
+            ps.setString(3, statut);
+            ps.setString(4, projet);
+            ps.setString(5, assigneesStr);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Erreur lors de l'enregistrement en base.");
+            return;
+        }
+
         titleField.getScene().getWindow().hide();
     }
 
     @FXML
     private void onCancel() {
-        // Fermer la fenêtre sans rien faire
         titleField.getScene().getWindow().hide();
     }
 
     private void showError(String msg) {
-        errorLabel.setText(msg);
-        errorLabel.setVisible(true);
+        if (errorLabel != null) {
+            errorLabel.setText(msg);
+            errorLabel.setVisible(true);
+        } else {
+            System.err.println("Erreur: " + msg);
+        }
     }
 }
