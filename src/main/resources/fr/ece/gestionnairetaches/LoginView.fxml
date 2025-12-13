@@ -1,18 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox alignment="CENTER" spacing="15" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="fr.ece.gestionnairetaches.controller.LoginController" prefWidth="300" prefHeight="400">
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+<StackPane styleClass="root-pane" stylesheets="@styles.css"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="fr.ece.gestionnairetaches.controller.LoginController"
+           prefWidth="500" prefHeight="600">
 
-    <Label text="Connexion" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-    <TextField fx:id="emailField" promptText="Email"/>
-    <PasswordField fx:id="passwordField" promptText="Mot de passe"/>
-    <Button text="Se connecter" onAction="#handleLogin" maxWidth="Infinity" style="-fx-background-color: #007bff; -fx-text-fill: white;"/>
+    <VBox styleClass="card-pane" alignment="CENTER" spacing="15" maxWidth="350" maxHeight="480">
 
-    <Hyperlink text="Pas de compte ? Créer un compte" onAction="#goToSignup"/>
+        <StackPane>
+            <Circle radius="30" fill="#3498db"/>
+            <Label text="K" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </StackPane>
 
-    <Label fx:id="errorLabel" textFill="red"/>
-</VBox>
+        <Label text="Kanban App" styleClass="title-label"/>
+        <Label text="Connectez-vous à votre espace" styleClass="subtitle-label"/>
+
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Email" style="-fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+            <TextField fx:id="emailField" promptText="exemple@ece.fr"/>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Mot de passe" style="-fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+            <PasswordField fx:id="passwordField" promptText="••••••••"/>
+        </VBox>
+
+        <VBox prefHeight="10"/>
+
+        <Button text="SE CONNECTER" onAction="#handleLogin" maxWidth="Infinity" styleClass="button-primary"/>
+
+        <Label fx:id="errorLabel" styleClass="error-label"/>
+
+        <Separator style="-fx-padding: 10 0 10 0;"/>
+
+        <Label text="Pas encore de compte ?" style="-fx-text-fill: #95a5a6;"/>
+        <Button text="Créer un compte maintenant" onAction="#goToSignup" maxWidth="Infinity" styleClass="button-success"/>
+    </VBox>
+
+</StackPane>
