@@ -1,0 +1,87 @@
+/* --- FOND GÉNÉRAL (Dégradé moderne bleu/gris) --- */
+.root-pane {
+    -fx-background-color: linear-gradient(to bottom right, #2c3e50, #4ca1af);
+}
+
+/* --- LA CARTE CENTRALE (Le bloc blanc) --- */
+.card-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);
+    -fx-padding: 30;
+}
+
+/* --- TITRES --- */
+.title-label {
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+    -fx-padding: 0 0 20 0; /* Petit espace sous le sous-titre */
+}
+
+/* --- CHAMPS DE TEXTE --- */
+.text-field, .password-field {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5;
+    -fx-border-color: transparent;
+    -fx-padding: 10;
+    -fx-font-size: 13px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-background-color: white;
+    -fx-border-color: #3498db; /* Bordure bleue au focus */
+    -fx-border-radius: 5;
+}
+
+/* --- BOUTON PRIMAIRE (Bleu) --- */
+.button-primary {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+}
+
+.button-primary:hover {
+    -fx-background-color: #2980b9; /* Plus foncé au survol */
+}
+
+/* --- BOUTON SECONDAIRE (Vert pour inscription) --- */
+.button-success {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+}
+
+.button-success:hover {
+    -fx-background-color: #219150;
+}
+
+/* --- LIENS HYPERTEXTE --- */
+.hyperlink {
+    -fx-text-fill: #3498db;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #2980b9;
+    -fx-underline: true;
+}
+
+/* --- MESSAGES D'ERREUR --- */
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 12px;
+}
