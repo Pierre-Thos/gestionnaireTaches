@@ -1,151 +1,123 @@
 package fr.ece.gestionnairetaches.kanban;
 
+import fr.ece.gestionnairetaches.DatabaseConnection;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+
+import java.sql.*;
 
 public class KanbanController {
 
-    @FXML
-    private Button nouvelleTacheBtn;
-
-    @FXML
-    private Button deleteBtn;
-    private Button retourBtn;
-
-    @FXML
-    private HBox columns;
-
-    @FXML
-    private VBox colAFaire;
-
-    @FXML
-    private AnchorPane rootPane;
+    @FXML private AnchorPane rootPane;
+    @FXML private VBox todoCol;
+    @FXML private VBox doingCol;
+    @FXML private VBox doneCol;
 
     private double offsetX;
     private double offsetY;
 
     @FXML
     private void initialize() {
-        nouvelleTacheBtn.setOnAction(e -> creerTache());
+        loadTasks();
     }
 
-    private void retour() {
-        retourBtn.setOnAction(e-> open("/fr/ece/gestionnairetaches/tableaudebord/tableaudebord-view.fxml", retourBtn));
-    }
+    private void loadTasks() {
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                     "SELECT id, texte, colonne FROM tache")) {
 
-    private void open(String fxmlPath, Button btn) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Scene newScene = new Scene(loader.load());
-            Stage stage = (Stage) btn.getScene().getWindow();
-            stage.setScene(newScene);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String texte = rs.getString("texte");
+                int col = rs.getInt("colonne");
+
+                VBox sticky = createSticky(id, texte);
+                getColumn(col).getChildren().add(sticky);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    private void creerTache() {
-        //Creer le fond du conteneur de tache
-        VBox task = new VBox();
-        task.setStyle("-fx-background-color: yellow; -fx-border-color: black;");
-        task.setPrefSize(130, 80);
+    private VBox createSticky(int id, String texte) {
+        Label label = new Label(texte);
+        label.setWrapText(true);
 
-        //Ajoute une ellipse sur laquelle cliquer
-        HBox bar = new HBox();
-        bar.setStyle("-fx-background-color: #d9d9d9; -fx-padding: 3;");
-        bar.setPrefHeight(15);
-        bar.setAlignment(Pos.CENTER);
+        VBox box = new VBox(label);
+        box.setUserData(id);
+        box.setStyle("-fx-background-color: #f5f5a0; -fx-padding: 8; -fx-border-color: black;");
+        box.setPrefWidth(180);
 
-        Label ellipsis = new Label("⋯");
-        bar.getChildren().add(ellipsis);
-
-
-        TextArea content = new TextArea("Nouvelle tâche");
-        content.setWrapText(true);
-        content.setPrefSize(120, 55);
-
-        task.getChildren().addAll(bar, content);
-        colAFaire.getChildren().add(task);
-
-        makeDraggable(task, bar);
+        makeDraggable(box);
+        return box;
     }
 
-    //Fonction pour que le tache soit deplacable
-    private void makeDraggable(Node node, Node handle) {
-        handle.setOnMousePressed(e -> {
-            offsetX = e.getSceneX() - node.localToScene(0,0).getX();
-            offsetY = e.getSceneY() - node.localToScene(0,0).getY();
-            if (node.getParent() instanceof VBox parent) {
-                parent.getChildren().remove(node);
-                rootPane.getChildren().add(node);
-                Bounds b = node.localToScene(node.getBoundsInLocal());
-                node.setLayoutX(b.getMinX());
-                node.setLayoutY(b.getMinY());
-            }
+    private void makeDraggable(Node node) {
+        node.setOnMousePressed(e -> {
+            offsetX = e.getSceneX() - node.localToScene(0, 0).getX();
+            offsetY = e.getSceneY() - node.localToScene(0, 0).getY();
+            ((VBox) node.getParent()).getChildren().remove(node);
+            rootPane.getChildren().add(node);
         });
 
-        //Màj de la position de la tache quand elle est deplacee
-        handle.setOnMouseDragged(e -> {
+        node.setOnMouseDragged(e -> {
             node.setLayoutX(e.getSceneX() - offsetX);
             node.setLayoutY(e.getSceneY() - offsetY);
         });
 
-        //Code pour supprimer une tache / l'aligner a une colonne
-        handle.setOnMouseReleased(e -> {
-            if (isOverDelete(node)) {
-                rootPane.getChildren().remove(node);
-            } else {
-                snapToColumn(node);
-            }
-        });
+        node.setOnMouseReleased(e -> snapToColumn(node));
     }
 
-    //Detecte si la tache est suspendue sur le bouton delete
-    private boolean isOverDelete(Node sticky) {
-        Bounds s = sticky.localToScene(sticky.getBoundsInLocal());
-        Bounds d = deleteBtn.localToScene(deleteBtn.getBoundsInLocal());
-        return d.intersects(s);
-    }
-
-
-    //Choisit dans quelle colonne mettre la tache
     private void snapToColumn(Node sticky) {
         Bounds sb = sticky.localToScene(sticky.getBoundsInLocal());
         VBox best = null;
+        int bestCol = -1;
         double bestArea = 0;
 
-        for (Node n : columns.getChildren()) {
-            if (n instanceof VBox col) {
-                Bounds cb = col.localToScene(col.getBoundsInLocal());
-                double a = overlap(cb, sb);
-                if (a > bestArea) {
-                    bestArea = a;
-                    best = col;
-                }
+        VBox[] cols = { todoCol, doingCol, doneCol };
+
+        for (int i = 0; i < cols.length; i++) {
+            Bounds cb = cols[i].localToScene(cols[i].getBoundsInLocal());
+            double a = overlap(cb, sb);
+            if (a > bestArea) {
+                bestArea = a;
+                best = cols[i];
+                bestCol = i;
             }
         }
 
         if (best != null) {
             rootPane.getChildren().remove(sticky);
             best.getChildren().add(sticky);
+            updateColumn((int) sticky.getUserData(), bestCol);
         }
     }
 
+    private void updateColumn(int id, int col) {
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(
+                     "UPDATE tache SET colonne = ? WHERE id = ?")) {
+            ps.setInt(1, col);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     private double overlap(Bounds a, Bounds b) {
         double x = Math.max(0, Math.min(a.getMaxX(), b.getMaxX()) - Math.max(a.getMinX(), b.getMinX()));
         double y = Math.max(0, Math.min(a.getMaxY(), b.getMaxY()) - Math.max(a.getMinY(), b.getMinY()));
         return x * y;
+    }
+
+    private VBox getColumn(int c) {
+        return c == 0 ? todoCol : c == 1 ? doingCol : doneCol;
     }
 }

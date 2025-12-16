@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class SceneManager {
-    private static Stage stage;
+    public static Stage stage;
 
     public static void setStage(Stage s) { stage = s; }
 

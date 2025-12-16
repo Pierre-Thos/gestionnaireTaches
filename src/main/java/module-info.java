@@ -4,10 +4,9 @@ module fr.ece.gestionnairetaches {
     requires java.sql;
     requires jbcrypt;
 
-    requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires org.kordamp.bootstrapfx.core;
-    requires java.sql;
+    //requires org.controlsfx.controls;
+    //requires com.dlsc.formsfx;
+    //requires org.kordamp.bootstrapfx.core;
     //requires fr.ece.gestionnairetaches;
     requires javafx.graphics;
     //requires fr.ece.gestionnairetaches;
@@ -20,5 +19,6 @@ module fr.ece.gestionnairetaches {
 
     exports fr.ece.gestionnairetaches.kanban;
     exports fr.ece.gestionnairetaches.tableaudebord;
+    exports fr.ece.gestionnairetaches;
 
 }

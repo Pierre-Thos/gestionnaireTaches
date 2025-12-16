@@ -39,7 +39,7 @@
     <DatePicker fx:id="dueDatePicker" prefWidth="200"/>
 
     <Label text="Assignée à :"/>
-    <ListView fx:id="assigneesList" prefHeight="70"/>
+    <ComboBox fx:id="assigneeCombo" prefWidth="300"/>
 
     <Label text="Description :"/>
     <TextArea fx:id="descriptionArea" prefHeight="80"/>

@@ -5,111 +5,98 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class FormulairesController {
 
-    @FXML
-    private ComboBox<String> projectCombo;
-
-    @FXML
-    private TextField titleField;
-
-    @FXML
-    private ComboBox<String> statusCombo;
-
-    @FXML
-    private DatePicker dueDatePicker;
-
-    @FXML
-    private ListView<String> assigneesList;
-
-    @FXML
-    private TextArea descriptionArea;
-
-    @FXML
-    private Label errorLabel;
+    @FXML private ComboBox<String> projectCombo;
+    @FXML private TextField titleField;
+    @FXML private ComboBox<String> statusCombo;
+    @FXML private DatePicker dueDatePicker;
+    @FXML private ComboBox<String> assigneeCombo;
+    @FXML private TextArea descriptionArea;
+    @FXML private Label errorLabel;
 
     @FXML
     public void initialize() {
         statusCombo.setItems(FXCollections.observableArrayList(
-                "À faire",
-                "En cours",
-                "Terminé"
+                "À faire", "En cours", "Terminé"
         ));
 
-        projectCombo.setItems(FXCollections.observableArrayList(
-                "Projet A",
-                "Projet B",
-                "Projet C"
-        ));
+        try (Connection c = DatabaseConnection.getConnection();
+             Statement st = c.createStatement()) {
 
-        assigneesList.setItems(FXCollections.observableArrayList(
-                "Nelson",
-                "Pierre",
-                "Yèmi",
-                "Mahé"
-        ));
-        assigneesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            ResultSet rs = st.executeQuery("SELECT nom FROM projet");
+            ObservableList<String> projets = FXCollections.observableArrayList();
+            while (rs.next()) projets.add(rs.getString("nom"));
+            projectCombo.setItems(projets);
 
-        if (errorLabel != null) {
-            errorLabel.setVisible(false);
-            errorLabel.setText("");
+            rs = st.executeQuery("SELECT email FROM utilisateur");
+            ObservableList<String> users = FXCollections.observableArrayList();
+            while (rs.next()) users.add(rs.getString("email"));
+            assigneeCombo.setItems(users);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void onSave() {
-        if (errorLabel != null) {
-            errorLabel.setVisible(false);
-            errorLabel.setText("");
-        }
-
-        String projet = projectCombo.getValue();
         String titre = titleField.getText();
         String statut = statusCombo.getValue();
-        LocalDate echeance = dueDatePicker.getValue(); // non utilisé en base pour l'instant
+        String projetNom = projectCombo.getValue();
+        String userEmail = assigneeCombo.getValue();
+        LocalDate echeance = dueDatePicker.getValue();
         String description = descriptionArea.getText();
-        ObservableList<String> assignees = assigneesList.getSelectionModel().getSelectedItems();
 
-        if (projet == null || projet.isBlank()) {
-            showError("Veuillez sélectionner un projet.");
-            return;
-        }
-        if (titre == null || titre.isBlank()) {
-            showError("Le titre de la tâche est obligatoire.");
-            return;
-        }
-        if (statut == null || statut.isBlank()) {
-            showError("Veuillez choisir un statut.");
+        if (titre == null || titre.isBlank() || statut == null || projetNom == null) {
+            errorLabel.setText("Champs obligatoires manquants");
             return;
         }
 
-        String assigneesStr = "";
-        if (assignees != null && !assignees.isEmpty()) {
-            assigneesStr = String.join(", ", assignees);
-        }
+        int colonne = switch (statut) {
+            case "À faire" -> 0;
+            case "En cours" -> 1;
+            default -> 2;
+        };
 
-        String sql = "INSERT INTO tache (titre, description, statut, projet, assigne_a) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        try (Connection c = DatabaseConnection.getConnection()) {
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            int projetId;
+            try (PreparedStatement ps = c.prepareStatement(
+                    "SELECT id FROM projet WHERE nom = ?")) {
+                ps.setString(1, projetNom);
+                ResultSet rs = ps.executeQuery();
+                rs.next();
+                projetId = rs.getInt(1);
+            }
 
-            ps.setString(1, titre);
-            ps.setString(2, description);
-            ps.setString(3, statut);
-            ps.setString(4, projet);
-            ps.setString(5, assigneesStr);
+            Integer userId = null;
+            if (userEmail != null) {
+                try (PreparedStatement ps = c.prepareStatement(
+                        "SELECT id FROM utilisateur WHERE email = ?")) {
+                    ps.setString(1, userEmail);
+                    ResultSet rs = ps.executeQuery();
+                    if (rs.next()) userId = rs.getInt(1);
+                }
+            }
 
-            ps.executeUpdate();
+            try (PreparedStatement ps = c.prepareStatement(
+                    "INSERT INTO tache (texte, colonne, projet_id, user_id, date_echeance) VALUES (?, ?, ?, ?, ?)")) {
+                ps.setString(1, titre);
+                ps.setInt(2, colonne);
+                ps.setInt(3, projetId);
+                if (userId != null) ps.setInt(4, userId);
+                else ps.setNull(4, Types.INTEGER);
+                ps.setDate(5, echeance != null ? Date.valueOf(echeance) : null);
+                ps.executeUpdate();
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            showError("Erreur lors de l'enregistrement en base.");
+            errorLabel.setText("Erreur base de données");
             return;
         }
 
@@ -119,14 +106,5 @@ public class FormulairesController {
     @FXML
     private void onCancel() {
         titleField.getScene().getWindow().hide();
-    }
-
-    private void showError(String msg) {
-        if (errorLabel != null) {
-            errorLabel.setText(msg);
-            errorLabel.setVisible(true);
-        } else {
-            System.err.println("Erreur: " + msg);
-        }
     }
 }

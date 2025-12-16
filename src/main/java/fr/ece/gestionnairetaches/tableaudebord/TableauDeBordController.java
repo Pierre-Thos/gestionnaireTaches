@@ -23,9 +23,9 @@ public class TableauDeBordController {
     @FXML
     private void initialize() {
         kanbanBtn.setOnAction(e -> open("/fr/ece/gestionnairetaches/kanban/kanban-view.fxml", kanbanBtn));
-        connexionBtn.setOnAction(e -> open("/fr/ece/gestionnairetaches/connexion-view.fxml", connexionBtn));
-        projetsBtn.setOnAction(e -> open("/fr/ece/gestionnairetaches/projets-view.fxml", projetsBtn));
-        formulairesBtn.setOnAction(e -> open("/fr/ece/gestionnairetaches/formulaires-view.fxml", formulairesBtn));
+        connexionBtn.setOnAction(e -> open("/fr/ece/gestionnairetaches/LoginView.fxml", connexionBtn));
+        projetsBtn.setOnAction(e -> open("/fr/ece/gestionnairetaches/tableaudebord/projets-view.fxml", projetsBtn));
+        formulairesBtn.setOnAction(e -> open("/fr/ece/gestionnairetaches/Formulaires-view.fxml", formulairesBtn));
     }
 
     private void open(String fxmlPath, Button btn) {
