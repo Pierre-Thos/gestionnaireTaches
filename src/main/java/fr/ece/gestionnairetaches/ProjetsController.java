@@ -8,6 +8,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.*;
 
+import fr.ece.gestionnairetaches.utils.SceneManager;
+import fr.ece.gestionnairetaches.utils.SessionManager;
+import fr.ece.gestionnairetaches.model.entity.Utilisateur;
+
 public class ProjetsController {
 
     @FXML
@@ -29,12 +33,33 @@ public class ProjetsController {
 
     @FXML
     public void initialize() {
+
+        Utilisateur user = SessionManager.getInstance().getCurrentUser();
+
+        if (user == null || user.getRole() == null ||
+                !"ADMIN".equalsIgnoreCase(user.getRole().getNom())) {
+
+            Alert alert = new Alert(
+                    Alert.AlertType.ERROR,
+                    "Accès refusé : cette page est réservée aux administrateurs.",
+                    ButtonType.OK
+            );
+            alert.showAndWait();
+
+            SceneManager.changeScene("tableaudebord/tableaudebord-view.fxml", "Tableau de bord");
+            return;
+        }
+
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
 
         tableProjets.setItems(projets);
-
         chargerProjetsDepuisBDD();
+    }
+
+    @FXML
+    private void retourTableauBord() {
+        SceneManager.changeScene("tableaudebord/tableaudebord-view.fxml", "Tableau de Bord");
     }
 
     //Ajout
@@ -153,9 +178,17 @@ public class ProjetsController {
             this.description = description;
         }
 
-        public int getId() { return id; }
-        public String getNom() { return nom; }
-        public String getDescription() { return description; }
+        public int getId() {
+            return id;
+        }
+
+        public String getNom() {
+            return nom;
+        }
+
+        public String getDescription() {
+            return description;
+        }
 
         @Override
         public String toString() {

@@ -18,7 +18,7 @@
                         <Button fx:id="kanbanBtn" prefHeight="40.0" prefWidth="200.0" text="Accéder au Kanban" style="-fx-background-color: #4caf50; -fx-text-fill: white;" />
                         <Button fx:id="connexionBtn" prefHeight="40.0" prefWidth="200.0" text="Page de Connexion" style="-fx-background-color: #388e3c; -fx-text-fill: white;" />
                         <Button fx:id="projetsBtn" prefHeight="40.0" prefWidth="200.0" text="Gestion des Projets" style="-fx-background-color: #66bb6a; -fx-text-fill: white;" />
-                        <Button fx:id="formulairesBtn" prefHeight="40.0" prefWidth="200.0" text="Formulaires" style="-fx-background-color: #81c784; -fx-text-fill: white;" />
+                        <Button fx:id="formulairesBtn" prefHeight="40.0" prefWidth="200.0" text="Formulaires/ Ajouter une tâche" style="-fx-background-color: #81c784; -fx-text-fill: white;" />
                     </children>
                 </VBox>
             </children>

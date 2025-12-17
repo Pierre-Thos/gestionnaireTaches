@@ -1,5 +1,6 @@
 package fr.ece.gestionnairetaches;
 
+import fr.ece.gestionnairetaches.utils.SceneManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -100,11 +101,12 @@ public class FormulairesController {
             return;
         }
 
-        titleField.getScene().getWindow().hide();
+        SceneManager.changeScene("tableaudebord/tableaudebord-view.fxml", "Tableau de Bord");
+        //titleField.getScene().getWindow().hide();
     }
 
     @FXML
     private void onCancel() {
-        titleField.getScene().getWindow().hide();
+        SceneManager.changeScene("tableaudebord/tableaudebord-view.fxml", "Tableau de Bord");
     }
 }

@@ -20,24 +20,13 @@
         <Label text="Bienvenue !" styleClass="title-label"/>
         <Label text="Créez votre compte en quelques secondes" styleClass="subtitle-label"/>
 
-        <HBox spacing="10">
-            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                <Label text="Prénom" style="-fx-text-fill: #7f8c8d;"/>
-                <TextField fx:id="prenomField" promptText="Jean"/>
-            </VBox>
-            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                <Label text="Nom" style="-fx-text-fill: #7f8c8d;"/>
-                <TextField fx:id="nomField" promptText="Dupont"/>
-            </VBox>
-        </HBox>
-
         <VBox spacing="5" alignment="CENTER_LEFT">
-            <Label text="Email Professionnel" style="-fx-text-fill: #7f8c8d;"/>
-            <TextField fx:id="emailField" promptText="jean.dupont@ece.fr"/>
+            <Label text="Email Professionnel"/>
+            <TextField fx:id="emailField" promptText="utilisateur@ece.fr"/>
         </VBox>
 
         <VBox spacing="5" alignment="CENTER_LEFT">
-            <Label text="Mot de passe" style="-fx-text-fill: #7f8c8d;"/>
+            <Label text="Mot de passe"/>
             <PasswordField fx:id="passwordField" promptText="Au moins 6 caractères"/>
         </VBox>
 

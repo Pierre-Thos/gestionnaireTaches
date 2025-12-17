@@ -18,6 +18,7 @@ public class LoginController {
     @FXML private PasswordField passwordField;
     @FXML private Label errorLabel;
     @FXML private Button btnCreerCompte;
+    @FXML private Button retourBtn;
 
     private final UtilisateurDAO dao = new UtilisateurDAO();
 
@@ -26,11 +27,17 @@ public class LoginController {
         Utilisateur user = dao.authentifier(emailField.getText(), passwordField.getText());
         if (user != null) {
             SessionManager.getInstance().login(user);
-            SceneManager.changeScene("DashboardView.fxml", "Tableau de Bord");
+            SceneManager.changeScene("tableaudebord/tableaudebord-view.fxml", "Tableau de Bord");
         } else {
             errorLabel.setText("Email ou mot de passe incorrect.");
         }
     }
+
+    @FXML
+    public void retourTableau() {
+        SceneManager.changeScene("tableaudebord/tableaudebord-view.fxml", "Tableau de Bord");
+    }
+
 
     public void goToSignup() {
         try {
